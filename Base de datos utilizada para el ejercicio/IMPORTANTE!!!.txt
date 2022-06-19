@@ -1,0 +1,2 @@
+1- Primero Crear la base de datos "vacía" con nombre 'tienda' a través de cualquier SGBD.
+2- Luego Correr el script DENTRO de la base de datos creada, automáticamente creará la tabla PRODUCTO y los 10 registros que ya están incorporados.

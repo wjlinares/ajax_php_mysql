@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- Para este ejemplo vincule un archivo distinto al tradicional, ya que es un TEMA DISTINTO, pero esto es OPCIONAL -->
+    <link rel="stylesheet" href="bootstrap 4.4.1/css/bootstrap_tema_plano_.min.css">
+    <title>Ajax-Php-Mysql</title>
+  </head>
+  <!-- Estilos aplicados para solucionar problemas por la clase "fixed-top" de bootstrap -->
+  <body style="padding-top: 150px !important;">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">CRUD CON AJAX-PHP & MYSQL<br><span class="text-muted lead" style="font-size: 0.75em !important;">&copy; William Linares.</span></a>
+          
+            <form class="d-flex" id="frmBusqueda">
+                <input type="text" name="inputBuscar" id="inputBuscar" class="form-control me-sm-2" placeholder="buscar producto...">
+            </form>
+          </div>
+        </div>
+    </nav>
+    <!-- Aquí se mostrarán las alertas de succefull o failed. Se están aplicando unos estilos en línea por la barra de navegación que se estableció fija -->
+    <div id="contenedorAlertas" style="position: relative; top: -35px;"></div>
+
+    <!-- Este es todo el código html del formulario que hace el registro. Abajo se vé bastante por tanto DIV y clases del Diseño de Bootstrap jaja -->
+    <!-- Lo dejo acá, aunque no es necesario -->
+    <!-- <form id="frmAgregarProducto">
+        <input type="text" name="nombre" id="nombre"  placeholder="nombre..."><br>
+        <input type="number" name="precio" id="precio"  min="0" step="0.01" placeholder="precio..."><br>
+        <input type="number" name="cantidad" id="cantidad"  min="0" placeholder="cantidad..."><br>
+        <input type="submit" value="Agregar">
+      </form> -->
+
+   
+    <!-- ======================================================== FORMULARIO DE REGISTRO DE PRODUCTOS ========================================================-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <!-- ====== Estas son las configuraciones que se hacen para que funcione la ventana modal ====== -->
+          <!-- <button type="button" class="btn btn-success" data-toggle='modal' data-target='#modal-frmAgregarProducto'>Agregar Producto</button> -->
+          <div class="modal fade" id="modal-frmAgregarProducto" tabindex="-1" role='dialog' aria-labelledby='modal-frmAgregarProducto' aria-hidden='true'>
+            <div class="modal-dialog modal-sm"> <!-- Acá las variantes podrían ser: modal-sm modal-md modal-lg modal-xl -->
+              <div class="modal-content">
+                <!-- ESTE ES EL ENCABEZADO DE LA VENTANA MODAL -->
+                <div class="modal-header">
+                  <h5 class="modal-title">Agregando Nuevo Producto</h5>
+                  <!-- <button class="close" data-dismiss='modal' aria-label='Cerrar'> -->
+                    <span aria-hidden='true'>&times;</span>
+                  </button>
+                </div>
+                <!-- En este DIV se mostrará el mensaje de error cuando algún campo se quiera enviar vacío  -->
+                <div class="text-center text-danger" id="alertaDeCamposInsertarProducto"></div>
+  
+                <form id="frmAgregarProducto">
+                  <!-- ESTE ES EL CUERPO DE LA VENTANA MODAL -->
+                  <div class="modal-body">
+                    <div class="container-fluid">
+
+                      <!-- ESTA ES LA COLUMNA -->
+                      <div class="form-group row">
+
+                        <div class="col-lg-12">
+                          <label for="nombre">Nombre:</label>
+                          <input type="text" name="nombre" id="nombre" placeholder="Ingresar nombre producto" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-lg-12">
+                          <label for="precio">Precio:</label>
+                          <input type="number" name="precio" id="precio"  min="0" step="0.01" placeholder="Ingresar precio producto" class="form-control form-control-sm">
+                        </div>
+
+                         <div class="col-lg-12">
+                          <label for="cantidad">Cantidad:</label>
+                          <input type="number" name="cantidad" id="cantidad"  min="0" step="0.01" placeholder="Ingresar cantidad producto" class="form-control form-control-sm">
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                        
+                  <!-- ESTE ES EL PIE DE LA VENTANA MODAL -->
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success btn-sm">AGREGAR &nbsp; <!-- El siguiente código largo sólo es para mostrar un icono SVG -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="limpiarDatos btn btn-dark btn-sm" data-dismiss='modal'>CERRAR &nbsp;
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+  
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+ <!-- ======================================================== FORMULARIO DE ACTUALIZACIÓN DE PRODUCTOS ========================================================-->
+    <!-- <p>Formulario para Actualizar Productos</p>
+    <form id="frmActualizarProducto">
+        <input type="text" name="nombreA" id="nombreA" required><br>
+        <input type="number" name="precioA" id="precioA" required min="0" step="0.01"><br>
+        <input type="number" name="cantidadA" id="cantidadA" required min="0"><br>
+        <input type="submit" value="Actualizar">
+    </form> -->
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <!-- ====== Estas son las configuraciones que se hacen para que funcione la ventana modal ====== -->
+          <!-- <button type='button' class='btn btn-success' data-toggle='modal' data-target='#modal-frmActualizarProducto'>Editar</button> -->
+          <div class="modal fade" id="modal-frmActualizarProducto" tabindex="-1" role='dialog' aria-labelledby='modal-frmActualizarProducto' aria-hidden='true'>
+            <div class="modal-dialog modal-sm"> <!-- Acá las variantes podrían ser: modal-sm modal-md modal-lg modal-xl -->
+              <div class="modal-content">
+                <!-- ESTE ES EL ENCABEZADO DE LA VENTANA MODAL -->
+                <div class="modal-header">
+                  <h5 class="modal-title">Actualizando Producto</h5>
+                  <!-- <button class="close" data-dismiss='modal' aria-label='Cerrar'> -->
+                    <span aria-hidden='true'>&times;</span>
+                  </button>
+                </div>
+                <!-- En este DIV se mostrará el mensaje de error cuando algún campo se quiera enviar vacío  -->
+                <div class="text-center text-danger" id="alertaDeCamposActualizarProducto"></div>
+  
+                <form id="frmActualizarProducto">
+                  <!-- ESTE ES EL CUERPO DE LA VENTANA MODAL -->
+                  <div class="modal-body">
+                    <div class="container-fluid">
+
+                      <!-- ESTA ES LA COLUMNA -->
+                      <div class="form-group row">
+
+                        <div class="col-lg-12">
+                          <input type="hidden" name="idA" id="idA"> <!-- Este input Sirve para poder enviar el ID del producto al backend y así poder actualizar -->
+                          <label for="nombre">Nombre:</label>
+                          <input type="text" name="nombreA" id="nombreA" placeholder="Ingresar nombre producto" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-lg-12">
+                          <label for="precio">Precio:</label>
+                          <input type="number" name="precioA" id="precioA"  min="0" step="0.01" placeholder="Ingresar precio producto" class="form-control form-control-sm">
+                        </div>
+
+                         <div class="col-lg-12">
+                          <label for="cantidad">Cantidad:</label>
+                          <input type="number" name="cantidadA" id="cantidadA"  min="0" step="0.01" placeholder="Ingresar cantidad producto" class="form-control form-control-sm">
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                        
+                  <!-- ESTE ES EL PIE DE LA VENTANA MODAL EIDTAR -->
+                  <div class="modal-footer">
+                    <button type="submit" id="btnModalActualizar" class="btn btn-success btn-sm">ACTUALIZAR  &nbsp;
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="limpiarDatos btn btn-dark btn-sm" data-dismiss='modal'>CERRAR &nbsp;
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+  
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==========================================================================================================================================================-->
+
+    <div class="container">
+      <div class="d-flex justify-content-end">
+        <!-- Este botón yo lo puse aquí a la par de la tabla, ya que éste aparece dentro del modal y no tiene sentido que esté ahí jaja -->
+        <button type="button" class="btn btn-success" data-toggle='modal' data-target='#modal-frmAgregarProducto'>Agregar Producto &nbsp;
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-plus" viewBox="0 0 16 16">
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+            <path d="M8 4a.5.5 0 0 1 .5.5V6H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4z"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Estos estilos son para evitar el desplazamiento vertical en toda la página y así enfocarse ÚNICAMENTE en el desplazamiento vertical sólo de LA TABLA -->
+      <div style="height: 65vh; overflow-y: auto;">
+        <table class="table table-bordered table-sm">
+          <thead>
+              <tr>
+                  <th>NOMBRE</th>
+                  <th>PRECIO</th>
+                  <th>CANTIDAD</th>
+                  <th>ACCIONES</th>
+              </tr>
+          </thead>
+
+          <tbody id="contenedorRegistros">
+              <!-- Esta área se llenará de manera automática desde el archivo "main.js" -->
+          </tbody>
+
+        </table>
+      </div>
+      
+    </div>
+
+
+    <!-- ================= MODAL PEQUEÑO PARA PODER VER LOS DETALLES DE UN REGISTRO ================= -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <!-- ====== Estas son las configuraciones que se hacen para que funcione la ventana modal ====== -->
+          <div class="modal fade" id="modal-frmVerDetalleProducto" tabindex="-1" role='dialog' aria-labelledby='modal-frmVerDetalleProducto' aria-hidden='true'>
+            <div class="modal-dialog modal-md"> <!-- Acá las variantes podrían ser: modal-sm modal-md modal-lg modal-xl -->
+              <div class="modal-content">
+                <!-- ESTE ES EL ENCABEZADO DE LA VENTANA MODAL -->
+                <div class="modal-header">
+                  <h5 class="modal-title">Detalles Del Producto</h5>
+                  <!-- <button class="close" data-dismiss='modal' aria-label='Cerrar'> -->
+                    <span aria-hidden='true'>&times;</span>
+                  </button>
+                </div>
+                <!-- ESTE ES EL CUERPO DE LA VENTANA MODAL -->
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    <table class="table table-bordered table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>NOMBRE</th>
+                          <th>PRECIO</th>
+                          <th>CANTIDAD</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-info"> <span id="spanId"></span> </td>
+                          <td class="text-info"> <span id="spanNombre"></span> </td>
+                          <td class="text-info"> $<span id="spanPrecio"></span> </td>
+                          <td class="text-info"> <span id="spanCantidad"></span> </td>
+                        </tr>
+                        <tr>
+                          <td colspan="4" class="text-center"><img src="imagenes/caja_productos.jpg" alt="caja de productos"  class="img-fluid"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <input type="hidden" id="inputIdDetalleRegistro"> <!-- Input muy importante para almacenar el id del botón al cual se ha dado clic -->
+                  </div>
+                </div>
+                      
+                <!-- ESTE ES EL PIE DE LA VENTANA MODAL EIDTAR -->
+                <div class="modal-footer">
+                  <button type="button" class="limpiarDatos btn btn-dark btn-sm" data-dismiss='modal'>CERRAR &nbsp;
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ================= MODAL PEQUEÑO PARA PODER CONFIRMAR LA ELIMINACIÓN DE UN REGISTRO ================= -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <!-- ====== Estas son las configuraciones que se hacen para que funcione la ventana modal ====== -->
+          <!-- <button type='button' class='btn btn-success' data-toggle='modal' data-target='#modal-frmEliminarProducto'>Editar</button> -->
+          <div class="modal fade" id="modal-frmEliminarProducto" tabindex="-1" role='dialog' aria-labelledby='modal-frmEliminarProducto' aria-hidden='true'>
+            <div class="modal-dialog modal-sm"> <!-- Acá las variantes podrían ser: modal-sm modal-md modal-lg modal-xl -->
+              <div class="modal-content">
+                <!-- ESTE ES EL ENCABEZADO DE LA VENTANA MODAL -->
+                <div class="modal-header">
+                  <h5 class="modal-title">Eliminar Producto</h5>
+                  <!-- <button class="close" data-dismiss='modal' aria-label='Cerrar'> -->
+                    <span aria-hidden='true'>&times;</span>
+                  </button>
+                </div>
+                <!-- ESTE ES EL CUERPO DE LA VENTANA MODAL -->
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    <p>¿Está seguro que desea eliminar el producto?</p>
+                    <input type="hidden" id="inputIdEliminarRegistro"> <!-- Input muy importante para almacenar el id del botón al cual se ha dado clic -->
+                  </div>
+                </div>
+                      
+                <!-- ESTE ES EL PIE DE LA VENTANA MODAL EIDTAR -->
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-danger btn-sm" data-dismiss='modal' id="btnModalEliminarProducto">ELIMINAR &nbsp;
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                      </svg>
+                  </button>
+                  <button type="button" class="limpiarDatos btn btn-dark btn-sm" data-dismiss='modal'>CERRAR &nbsp;
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Librerías -->
+    <script src="bootstrap 4.4.1/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="bootstrap 4.4.1/js/bootstrap.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+    
+    <!--
+      Archivo JavaScript que realiza las peticiones AJAX. También se puede colocar dentro de la etiqueta <head> ya que
+        dentro del archivo JavaScript se ha configurado el evento "DOMContentLoaded" para que el código JS se ejecute cuando TODO el documento se haya cargado.
+      -->
+    <script src="main.js"></script>
+    
+  </body>
+</html>
+
+
+<!-- ======================================== NOTA IMPORTANTE ======================================== -->
+<!--
+  Para que a la hora de subir el proyecto a un HOST en Línea funcione sin problemas, es necesario
+  VINCULAR los scripts js desde el CDN de Bootstrap, y NO USAR los enlaces Locales ya que bloquea scripts por
+  cuestiones de los orígenes "CROSSORIGIN" o alago así jaja.
+  En conclusión, Quitar los scripts JS locales y Vincular los CDN desde Bootstrap xD
+-->
